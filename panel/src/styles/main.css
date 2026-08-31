@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 @theme {
-  /* 精确复制 cpa-usage-keeper 的 white 主题（themes.scss [data-theme='white']，生产默认） */
+  /* 白色主题（themes.scss [data-theme='white']，生产默认） */
   --color-bg-secondary: #ffffff;
   --color-bg-primary: #ffffff;
   --color-bg-tertiary: #f6f6f6;
@@ -40,7 +40,7 @@
     color: var(--color-text-primary);
     font-family: 'SF Pro Text', 'Segoe UI', -apple-system, BlinkMacSystemFont,
       Roboto, sans-serif;
-    font-size: 12px; /* Keeper 正文基准 */
+    font-size: 12px; /* 正文基准 */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -77,7 +77,7 @@
     padding: 20px;
     box-shadow: var(--shadow-lg);
   }
-  .keeper-card-title {
+  .card-title {
     color: var(--color-text-primary);
     font-size: 18px;
     font-weight: 700;
