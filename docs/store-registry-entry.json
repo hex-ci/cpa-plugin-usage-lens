@@ -1,0 +1,16 @@
+{
+  "id": "usage-lens",
+  "name": "Usage Lens",
+  "description": "In-process usage analytics for CLIProxyAPI: requests, tokens, cost, cache-hit, latency and error rate by model & API key, with a built-in dashboard panel. Zero standalone service — no ports, no Redis, no extra keys.",
+  "author": "hex-ci",
+  "version": "0.1.0",
+  "repository": "https://github.com/hex-ci/cpa-plugin-usage-lens",
+  "logo": "https://raw.githubusercontent.com/hex-ci/cpa-plugin-usage-lens/main/assets/logo.png",
+  "homepage": "https://github.com/hex-ci/cpa-plugin-usage-lens",
+  "license": "MIT",
+  "tags": [
+    "Usage",
+    "Analytics",
+    "Management"
+  ]
+}

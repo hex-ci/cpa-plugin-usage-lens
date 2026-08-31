@@ -203,7 +203,7 @@ func ukRegistration() registration {
 			Version:          version,
 			Author:           "hex-ci",
 			GitHubRepository: "https://github.com/hex-ci/cpa-plugin-usage-lens",
-			Logo:             "",
+			Logo:             "https://raw.githubusercontent.com/hex-ci/cpa-plugin-usage-lens/main/assets/logo.png",
 			ConfigFields: []pluginapi.ConfigField{
 				{
 					Name:        "db_path",
