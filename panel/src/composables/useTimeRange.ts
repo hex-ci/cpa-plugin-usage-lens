@@ -1,4 +1,4 @@
-// useTimeRange.ts —— 时间范围 5 档控件状态(对齐 Keeper TimeRangeControl)。
+// useTimeRange.ts —— 时间范围 5 档控件状态。
 // 与 UsagePage.vue 共用 localStorage 键 cli-proxy-usage-time-range-v1:跨页范围保持一致。
 // UsagePage.vue 内联实现暂未迁移到此(生产稳定优先),新页面一律用本 composable。
 import { ref } from 'vue'

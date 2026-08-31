@@ -12,7 +12,7 @@ const selectedKey = ref('')
 const window2 = ref<'day' | 'week' | 'month'>('day')
 const rtWindow = ref(15)
 
-// 时间范围（对齐 Keeper 5 档）：滚动小时/天 + 今天/昨天 + 自定义
+// 时间范围（5 档）：滚动小时/天 + 今天/昨天 + 自定义
 type RangeMode = 'hour' | 'day' | 'today' | 'yesterday' | 'custom'
 const RANGE_MODES: RangeMode[] = ['hour', 'day', 'today', 'yesterday', 'custom']
 const rangeMode = ref<RangeMode>('today')

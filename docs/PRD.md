@@ -1,9 +1,8 @@
-# usage-lens（用量透镜）· 产品需求文档（PRD）
+# usage-lens · 产品需求文档（PRD）
 
 > 目标产品：`usage-lens`，一个 CLIProxyAPI（简称 CPA）插件，在不启动独立服务的前提下，持久化并可视化用量。
 > 发布目标：上架 CPA 官方插件市场（见第 9 节发布与开源规范）。
-> 对标对象：`cpa-usage-keeper`（简称 Keeper），用量分析功能面照抄，前端用 Vue 3 + 脚本语法重写。
-> 本文档基于对 Keeper 源码（v1.15.0）的逐模块调研整理，是后续开发的唯一需求基线。
+> 本文档是后续开发的唯一需求基线。
 > 语言约定：全部文案简体中文；Token 为行业通量术语保留原词，其余概念用中文表达。
 
 ---
@@ -11,16 +10,16 @@
 ## 1. 产品定位
 
 本插件聚焦「用量分析」**核心功能**：请求数、Token 量、成本、缓存命中、延迟、错误率，以及按模型 / API Key 的
-维度分布。取舍原则：**凡与用量统计核心无关的一律不做**——Keeper 的凭证管理（auth files 列表、配额检查、
+维度分布。取舍原则：**凡与用量统计核心无关的一律不做**——凭证管理（auth files 列表、配额检查、
 AI 提供商健康）不做（那是凭证健康管理，且依赖各省份上游 API 的配额探测重活）。
 
-**核心差异化：零独立服务。** Keeper 是独立服务（自起端口 + 订阅 Redis 队列 + 自带账号体系 + 单独发版运维）；
+**核心差异化：零独立服务。** 传统独立服务方案需要自起端口 + 订阅队列 + 自带账号体系 + 单独发版运维；
 本插件跑在 CPA 进程内，通过 `UsagePlugin` 能力直接接收用量事件，数据落本地 SQLite，面板走 CPA 资源路由。
 装机 = 放一个动态库 + 配置里开一个开关，**随 CPA 启停、不用守护进程、不占端口、不碰 Redis、不要密钥**。
 
 差异化优势（相对独立服务方案）：
 
-| 维度 | 独立服务（Keeper） | usage-lens（本插件） |
+| 维度 | 独立服务方案 | usage-lens |
 |---|---|---|
 | 部署 | 独立进程 + 端口 + 常驻守护 | 动态库落地 + 配置开关，随 CPA 启停 |
 | 数据采集 | Redis 队列订阅 / 轮询（独占消费） | 事件推送（同源、非破坏性、零延迟） |
@@ -28,11 +27,11 @@ AI 提供商健康）不做（那是凭证健康管理，且依赖各省份上�
 | 密钥 | 明文管理密钥环境变量 | 零密钥配置（面板挂靠 CPA 登录态） |
 | 运维 | 单独监控 / 升级 / 守护 | 与 CPA 生命周期一致 |
 | 升级换代 | 独立发版 + 重启服务 | 换 .so 即生效，随 CPA 重启 |
-| 共存迁移 | 独占队列，多实例冲突 | 非破坏性采集，可与现有 Keeper 并存灰度 |
+| 共存迁移 | 独占队列，多实例冲突 | 非破坏性采集，可与既有采集方案并存灰度 |
 
 已裁剪（无需再议）：凭证页全部、社区排行、独立登录、多语言、版本检查、定时备份、配额刷新、主题切换。
 
-插件名 / ID = `usage-lens`（用量透镜）；开源仓库 `github.com/hex-ci/cpa-plugin-usage-lens`（公开、MIT，用户 hex-ci 维护）。
+插件名 / ID = `usage-lens`；开源仓库 `github.com/hex-ci/cpa-plugin-usage-lens`（公开、MIT，用户 hex-ci 维护）。
 
 ---
 
@@ -43,8 +42,8 @@ AI 提供商健康）不做（那是凭证健康管理，且依赖各省份上�
 | 用量事件 | 每次请求完成后的一条记录（一行一条请求） |
 | Token 明细 | 输入 / 输出 / 推理 / 缓存读 / 缓存写，及总量 |
 | 缓存命中率 | 缓存读 Token ÷（输入 Token + 缓存读 Token） |
-| 每分钟请求 / 每分钟 Token | 对应余 Keeper 的 RPM / TPM |
-| 首 Token 延迟 | 首个 Token 的响应时间（Keeper 叫 TTFT）；总延迟为全响应耗时 |
+| 每分钟请求 / 每分钟 Token | 对应 RPM / TPM（每分钟请求数 / 每分钟 Token 数） |
+| 首 Token 延迟 | 首个 Token 的响应时间（TTFT）；总延迟为全响应耗时 |
 | 模型定价 | 模型 → 每百万 Token 输入/输出单价，用于成本估算 |
 | 活动窗口 | 热图/趋势的时间聚合粒度（天=小时，周/月=天） |
 | 实时窗口 | 实时指标的对比窗口（15/30/60 分钟） |
@@ -69,13 +68,13 @@ CPA 主面板左侧菜单「用量统计」进入面板，顶栏标签导航：
 ### 4.1 概览页
 
 **4.1.1 工具条**
-- 时间范围（对齐 Keeper，5 档，完整复刻不裁剪）：
+- 时间范围（5 档，完整不裁剪）：
   - 滚动小时：5–24 小时，滑块选择，默认 8 小时
   - 滚动天：1–30 天，滑块选择，默认 7 天
   - 今天 / 昨天
   - 自定义：单位（小时/天）+ 起止时间选择器
   - 范围状态持久化本地（localStorage，键 `cli-proxy-usage-time-range-v1`）。
-- API Key 下拉筛选（对齐 Keeper，完整复刻不裁剪）：
+- API Key 下拉筛选（完整不裁剪）：
   - 选项 =「全部」+ 各 API Key；显示标签优先用别名，无别名用原文
   - 选中后概览/分析/事件等所有统计查询按该 Key 过滤（聚合端点统一带 `api_key` 参数）
   - 别名在设置页可编辑（写本地库），下拉实时体现；筛选只在统计类标签显示
@@ -155,14 +154,14 @@ api_key_aliases（API Key 别名，用户可编辑）
   api_key TEXT 主键, alias TEXT, updated_at INTEGER
 ```
 
-与 Keeper 的差异：Keeper 另有身份聚合、预聚合表、90 天归档表、凭证快照表。
+已裁剪：身份聚合、预聚合表、90 天归档表、凭证快照表。
 本插件首期不做预聚合与归档（单机量级实时查询足够）；凭证相关表整体不做。
 
 ---
 
 ## 6. 后端 API（插件管理路由）
 
-前缀 `/v0/management/plugins/usage-keeper/api/`，均需 CPA 管理密钥（面板自动携带）。
+前缀 `/v0/management/plugins/usage-lens/api/`，均需 CPA 管理密钥（面板自动携带）。
 
 | 方法 | 路径 | 说明 | 关键参数 |
 |---|---|---|---|
@@ -178,7 +177,7 @@ api_key_aliases（API Key 别名，用户可编辑）
 | GET/PUT | /pricing | 定价表读写 | PUT 批量 upsert |
 | GET | /pricing/sync/preview | 价格同步预览 | 拉 models.dev 公开目录 → 匹配/未匹配 |
 
-二期（对齐 Keeper）：`/analysis`（延迟诊断）、`/events/:id/request-log`、`/events/export`。
+二期：`/analysis`（延迟诊断）、`/events/:id/request-log`、`/events/export`。
 
 ---
 
@@ -187,7 +186,7 @@ api_key_aliases（API Key 别名，用户可编辑）
 ```
 请求完成 → CPA 用量分发
          └─ 本插件 UsagePlugin(usage.handle) → 缓冲通道 → 后台工作线程落 SQLite
-面板：Vite 产物 go:embed（all: 前缀）→ 资源路由 /v0/resource/plugins/usage-keeper/
+面板：Vite 产物 go:embed（all: 前缀）→ 资源路由 /v0/resource/plugins/usage-lens/
 ```
 
 配置仅一项：`db_path`（本地库路径）。**零密钥**——用量事件采集不需要任何密钥，
@@ -207,14 +206,14 @@ api_key_aliases（API Key 别名，用户可编辑）
   聚合查询走 ts/model/api_key 索引。
 - 安全：面板不渲染任何上游凭证明文；管理路由统一走 CPA 鉴权；敏感操作不在未鉴权资源路由上执行。
 - 文案：全简体中文（术语 Token 保留）。
-- 样式：精确对齐 Keeper 白色主题（背景 #ffffff、主色 #8b8680、卡片圆角 24px、顶部强调色渐变细条）。
-- 兼容：插件与用户现有独立 Keeper 可并存（事件广播非破坏性消费，互不干扰）。
+- 样式：白色主题（背景 #ffffff、主色 #8b8680、卡片圆角 24px、顶部强调色渐变细条）。
+- 兼容：插件与既有独立采集方案可并存（事件广播非破坏性消费，互不干扰）。
 
 ---
 
 ## 9. 发布与开源规范
 
-- 命名：插件名/ID = `usage-lens`（用量透镜）；GitHub 仓库 `github.com/hex-ci/cpa-plugin-usage-lens`
+- 命名：插件名/ID = `usage-lens`；GitHub 仓库 `github.com/hex-ci/cpa-plugin-usage-lens`
   （公开、MIT、独立仓库，用户 hex-ci 维护，对标 model-playground 先例）。
 - 上架流程：往 CPA 官方插件市场 registry（`CLIProxyAPI-Plugins-Store/registry.json`）加条目
   `{id, name, description, author, repository, version, logo, homepage, license, tags}`。
@@ -246,4 +245,4 @@ api_key_aliases（API Key 别名，用户可编辑）
 
 1. 沙箱（独立 CPA 实例 + mock 上游）真实请求验证：事件落库、API 返回正确、面板渲染无资源/JS 错误。
 2. 生产部署后：资源路由全 200（含 helper 文件）、面板渲染预期内容、管理 API 非 401。
-3. 文案全中文、样式对齐 Keeper 实测值。
+3. 文案全中文、样式按实测值对齐。
