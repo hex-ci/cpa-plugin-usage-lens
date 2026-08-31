@@ -16,6 +16,21 @@ jobs:
           go-version: "1.26"
           cache: true
 
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+          cache-dependency-path: panel/pnpm-lock.yaml
+
+      # go:embed all:panel/dist 编译期需要面板产物,而 dist/ 不入库 ——
+      # 先构建面板,后续 vet/test/build 才能编译通过.
+      - name: Build panel (go:embed input)
+        run: make build-panel
+
       - name: Format
         run: test -z "$(gofmt -l .)"
 
