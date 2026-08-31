@@ -214,7 +214,7 @@ api_key_aliases（API Key 别名，用户可编辑）
 ## 9. 发布与开源规范
 
 - 命名：插件名/ID = `usage-lens`；GitHub 仓库 `github.com/hex-ci/cpa-plugin-usage-lens`
-  （公开、MIT、独立仓库，用户 hex-ci 维护，对标 model-playground 先例）。
+  （公开、MIT、独立仓库，Hex 维护，对标 model-playground 先例）。
 - 上架流程：往 CPA 官方插件市场 registry（`CLIProxyAPI-Plugins-Store/registry.json`）加条目
   `{id, name, description, author, repository, version, logo, homepage, license, tags}`。
 - 开源仓库基线：README（安装使用说明）、LICENSE（MIT）、logo、checksums.txt、多平台产物

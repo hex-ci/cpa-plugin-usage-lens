@@ -201,7 +201,7 @@ func ukRegistration() registration {
 		Metadata: pluginapi.Metadata{
 			Name:             providerName,
 			Version:          version,
-			Author:           "hex-ci",
+			Author:           "Hex",
 			GitHubRepository: "https://github.com/hex-ci/cpa-plugin-usage-lens",
 			Logo:             "https://raw.githubusercontent.com/hex-ci/cpa-plugin-usage-lens/main/assets/logo.png",
 			ConfigFields: []pluginapi.ConfigField{
