@@ -1,0 +1,86 @@
+@import 'tailwindcss';
+
+@theme {
+  /* 精确复制 cpa-usage-keeper 的 white 主题（themes.scss [data-theme='white']，生产默认） */
+  --color-bg-secondary: #ffffff;
+  --color-bg-primary: #ffffff;
+  --color-bg-tertiary: #f6f6f6;
+  --color-bg-quinary: #ffffff;
+  --color-surface: #ffffff;
+
+  --color-text-primary: #2d2a26;
+  --color-text-secondary: #6d6760;
+  --color-text-tertiary: #a29c95;
+  --color-text-quaternary: #c0bab3;
+
+  --color-border: #e5e5e5;
+  --color-border-strong: #d9d9d9;
+  --color-border-hover: #cccccc;
+
+  --color-primary: #8b8680;
+  --color-primary-hover: #7f7a74;
+  --color-success: #10b981;
+  --color-warning: #c65746;
+  --color-error: #c65746;
+
+  --shadow-card: 0 1px 2px 0 rgb(0 0 0 / 0.08);
+  --shadow-lg: 0 10px 18px -3px rgb(0 0 0 / 0.1);
+}
+
+@layer base {
+  html,
+  body,
+  #app {
+    min-height: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+    font-family: 'SF Pro Text', 'Segoe UI', -apple-system, BlinkMacSystemFont,
+      Roboto, sans-serif;
+    font-size: 12px; /* Keeper 正文基准 */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-bg-secondary);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-border-hover);
+  }
+}
+
+@layer components {
+  .card {
+    background: var(--color-bg-primary);
+    border: 1px solid var(--color-border);
+    border-radius: 24px;
+    padding: 20px;
+    box-shadow: var(--shadow-lg);
+  }
+  .keeper-card-title {
+    color: var(--color-text-primary);
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+}

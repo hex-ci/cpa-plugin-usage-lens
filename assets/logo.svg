@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="256" height="256">
+  <!-- 背景圆角方块(面板徽章同色 os: #8b8680) -->
+  <rect width="128" height="128" rx="28" fill="#8b8680"/>
+  <!-- 透镜 -->
+  <circle cx="64" cy="67" r="40" fill="#ffffff"/>
+  <!-- 镜面高光(暖灰半透明弧,白底上可见) -->
+  <path d="M 39 53 A 27 27 0 0 1 60 35" stroke="rgba(139,134,128,0.38)" stroke-width="5.5" fill="none" stroke-linecap="round"/>
+  <!-- 用量数据柱 -->
+  <rect x="45" y="80" width="10" height="13" rx="3" fill="#8b8680"/>
+  <rect x="59" y="66" width="10" height="27" rx="3" fill="#8b8680"/>
+  <rect x="73" y="73" width="10" height="20" rx="3" fill="#8b8680"/>
+</svg>

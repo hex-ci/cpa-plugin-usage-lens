@@ -1,0 +1,24 @@
+# Build artifacts
+*.so
+*.h
+*.dylib
+*.dll
+
+# Output dirs
+bin/
+dist/
+
+# Panel deps & build
+panel/node_modules/
+panel/dist/
+
+# Coverage
+coverage.out
+
+# Local tooling
+.playwright-cli/
+
+# Local DB (never ship)
+*.db
+*.db-wal
+*.db-shm
